@@ -1,13 +1,12 @@
 
 import streamlit as st
 import pandas as pd
-import pandas as pd
 import joblib
 import folium
 from streamlit_folium import folium_static
 
-# Load data and model
-gdf = pd.read_csv("pci_data_200.csv")
+# Load data
+gdf = pd.read_csv("pci_data_200_with_coords.csv")
 model = joblib.load("pci_forecast_model.pkl")
 
 # Sidebar filters
@@ -23,16 +22,18 @@ filtered['predicted_PCI'] = model.predict(X)
 
 # Display map
 st.title("Roadway PCI Digital Twin Viewer")
-m = folium.Map(location=[filtered.geometry.centroid.y.mean(), filtered.geometry.centroid.x.mean()], zoom_start=14)
+m = folium.Map(location=[filtered['latitude'].mean(), filtered['longitude'].mean()], zoom_start=12)
 
 for _, row in filtered.iterrows():
     color = 'green' if row['predicted_PCI'] >= 70 else 'orange' if row['predicted_PCI'] >= 50 else 'red'
-    folium.GeoJson(row['geometry'].__geo_interface__,
-                   style_function=lambda feature, color=color: {
-                       'color': color,
-                       'weight': 4,
-                   },
-                   tooltip=f"Segment: {row['segment_id']} | Predicted PCI: {row['predicted_PCI']:.1f}").add_to(m)
+    folium.CircleMarker(
+        location=[row['latitude'], row['longitude']],
+        radius=5,
+        color=color,
+        fill=True,
+        fill_opacity=0.7,
+        tooltip=f"Segment: {row['segment_id']} | Predicted PCI: {row['predicted_PCI']:.1f}"
+    ).add_to(m)
 
 folium_static(m)
 
