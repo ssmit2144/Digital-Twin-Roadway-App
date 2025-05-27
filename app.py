@@ -1,13 +1,13 @@
 
 import streamlit as st
-import geopandas as gpd
+import geopandas as pd
 import pandas as pd
 import joblib
 import folium
 from streamlit_folium import folium_static
 
 # Load data and model
-gdf = gpd.read_file("roadway_segments_with_pci.gpkg", layer="segments")
+gdf = pd.read_csv("pci_data.csv")
 model = joblib.load("pci_forecast_model.pkl")
 
 # Sidebar filters
