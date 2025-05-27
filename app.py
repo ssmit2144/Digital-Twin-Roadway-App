@@ -7,7 +7,7 @@ import folium
 from streamlit_folium import folium_static
 
 # Load data and model
-gdf = pd.read_csv("pci_data.csv")
+gdf = pd.read_csv("pci_data_200.csv")
 model = joblib.load("pci_forecast_model.pkl")
 
 # Sidebar filters
